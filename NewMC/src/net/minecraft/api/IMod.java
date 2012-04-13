@@ -1,4 +1,6 @@
-package net.minecraft.src;
+package net.minecraft.api;
+
+import net.minecraft.src.*;
 
 public interface IMod
 {

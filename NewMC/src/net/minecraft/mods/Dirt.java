@@ -1,5 +1,6 @@
 package net.minecraft.mods;
 
+import net.minecraft.api.*;
 import net.minecraft.src.*;
 
 public class Dirt
@@ -9,10 +10,12 @@ public class Dirt
 	//IMod
 		public Dirt block = null;
 		
+		@Override
 		public void onLoad()
 		{
 		}
 	
+		@Override
 		public void onMapNew(World world)
 		{
 			block = new Dirt();
@@ -20,6 +23,7 @@ public class Dirt
 			block.itemID = world.registerNewItem(block);
 		}
 	
+		@Override
 		public void onMapLoad(World world, IFile file)
 		{
 			int i = file.readCFGInt("Block.Dirt", -1);
@@ -33,6 +37,7 @@ public class Dirt
 				world.registerItem(block, j);
 		}
 		
+		@Override
 		public void onMapLoadFinal(World world, IFile file)
 		{
 			if(block.blockID == -1)
@@ -41,6 +46,7 @@ public class Dirt
 				block.itemID = world.registerNewItem(block);
 		}
 	
+		@Override
 		public void onMapSave(World world, IFile file) 
 		{
 			file.writeCFGInt("Block.Dirt", block.blockID);
@@ -51,21 +57,25 @@ public class Dirt
 	//IBlock
 		public int blockID;
 		
+		@Override
 		public int getBlockID()
 		{
 			return blockID;
 		}
 		
+		@Override
 		public String getBlockName()
 		{
 			return "Dirt";
 		}
 		
+		@Override
 		public boolean isSolid(World world, int x, int y, int z)
 		{
 			return true;
 		}
 		
+		@Override
 		public float breakSpeed(IItem holding, World world, int x, int y, int z, int orientation)
 		{
 			if(holding instanceof IShovel)
@@ -73,26 +83,29 @@ public class Dirt
 			return 0.6F;
 		}
 		
+		@Override
 		public boolean isValidBreak(IItem holding, World world, int x, int y, int z, int orientation)
 		{
-			if(holding instanceof IShovel)
-				return true;
-			return false;
+			return true;
 		}
 		
+		@Override
 		public Object onBreakDrop(World world, int x, int y, int z, int orientation)
 		{
 			return world.newItemStack(itemID, 0, 1);
 		}
 		
+		@Override
 		public void updateBlockTick(World world, int x, int y, int z)
 		{
 		}
 		
+		@Override
 		public void onBlockAdd(World world, int x, int y, int z, int fx, int fy, int fz)
 		{
 		}
 		
+		@Override
 		public void onBlockRemove(World world, int x, int y, int z, int fx, int fy, int fz)
 		{
 		}
@@ -101,11 +114,13 @@ public class Dirt
 	//IItem
 		public int itemID;
 		
+		@Override
 		public int getItemID()
 		{
 			return itemID;
 		}
 		
+		@Override
 		public String getItemName()
 		{
 			return "Dirt";

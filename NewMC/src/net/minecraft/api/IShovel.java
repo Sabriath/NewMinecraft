@@ -1,4 +1,4 @@
-package net.minecraft.src;
+package net.minecraft.api;
 
 public interface IShovel
 {
