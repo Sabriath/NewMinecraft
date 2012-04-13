@@ -39,28 +39,23 @@ public class World
 		throw new IllegalArgumentException("registerNewBlockWithMeta maxed");
 	}
 	
-	public int registerBlock(IBlock block, int id)
+	public void registerBlock(IBlock block, int id)
 	{
 		if(blocksList[id] == null)
-		{
 			blocksList[id] = block;
-			return id;
-		}
-		throw new IllegalArgumentException((new StringBuilder()).append("Slot ").append(id).append(" is already occupied by ").append(blocksList[id]).append(" when adding Block ").append(block).toString());
+		else
+			throw new IllegalArgumentException((new StringBuilder()).append("Slot ").append(id).append(" is already occupied by ").append(blocksList[id]).append(" when adding Block ").append(block).toString());
 	}
 	
-	public int registerBlockWithMeta(IBlock block, int id)
+	public void registerBlockWithMeta(IBlock block, int id)
 	{
 		int i;
 		for(i = 0; i < 16; i++)
 		{
 			if(blocksList[id + i] != null)
-			{
 				throw new IllegalArgumentException((new StringBuilder()).append("Slot ").append(id).append(" is already occupied by ").append(blocksList[id]).append(" when adding MetaBlock ").append(block).toString());
-			}
 			blocksList[id + i] = block;
 		}
-		return id;
 	}
 	
 	public int registerNewItem(IItem item)
@@ -79,15 +74,13 @@ public class World
 		throw new IllegalArgumentException("registerNewItem maxed");
 	}
 	
-	public int registerItem(IItem item, int id)
+	public void registerItem(IItem item, int id)
 	{
 
 		if(itemsList[id] == null)
-		{
 			itemsList[id] = item;
-			return id;
-		}
-		throw new IllegalArgumentException((new StringBuilder()).append("Slot ").append(id).append(" is already occupied by ").append(itemsList[id]).append(" when adding Item ").append(item).toString());
+		else
+			throw new IllegalArgumentException((new StringBuilder()).append("Slot ").append(id).append(" is already occupied by ").append(itemsList[id]).append(" when adding Item ").append(item).toString());
 	}
 	
 	public ItemStack newItemStack(int id, int dmg, int count)

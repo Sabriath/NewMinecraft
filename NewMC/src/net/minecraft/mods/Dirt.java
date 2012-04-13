@@ -7,14 +7,8 @@ public class Dirt
 {
 	
 	//IMod
-		public Dirt block;
+		public Dirt block = null;
 		
-		public String getName()	{		return "Dirt";	}
-		public int getVersion()	{		return 0;	}
-	
-		public String getDependencyName(int index)		{		return "";	}
-		public boolean isDependencyValid(int version)	{		return true;	}
-	
 		public void onLoad()
 		{
 		}
@@ -29,16 +23,22 @@ public class Dirt
 		public void onMapLoad(World world, IFile file)
 		{
 			int i = file.readCFGInt("Block.Dirt", -1);
+			int j = file.readCFGInt("Item.Dirt", -1);
 			block = new Dirt();
-			if(i == -1)
+			block.blockID = i;
+			block.itemID = j;
+			if(i != -1)
+				world.registerBlock(block, i);
+			if(j != -1)
+				world.registerItem(block, j);
+		}
+		
+		public void onMapLoadFinal(World world, IFile file)
+		{
+			if(block.blockID == -1)
 				block.blockID = world.registerNewBlock(block);
-			else
-				block.blockID = world.registerBlock(block, i);
-			i = file.readCFGInt("Item.Dirt", -1);
-			if(i == -1)
-				block.itemID = world.registerNewBlock(block);
-			else
-				block.itemID = world.registerItem(block, i);
+			if(block.itemID == -1)
+				block.itemID = world.registerNewItem(block);
 		}
 	
 		public void onMapSave(World world, IFile file) 
