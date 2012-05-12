@@ -4,7 +4,7 @@ import net.minecraft.api.*;
 import net.minecraft.src.*;
 
 public class Dirt
-	implements IMod, IBlock, IItem
+	implements IMod, IBlock, IPlaceableItem
 {
 	
 	//IMod
@@ -12,53 +12,13 @@ public class Dirt
 		int itemID = -1;
 		
 		@Override
-		public void onLoad()
+		public void onLoad(IWorld world)
 		{
+			blockID = world.registerBlock(this, "Dirt");
+			itemID = world.registerItem(this, "Dirt");
 		}
 	
-		@Override
-		public void onNewBlockIDs(World world, ITag configs)
-		{
-			if(blockID == -1)
-			{
-				blockID = world.registerNewBlock(this);
-				configs.FindOrAdd("Dirt.Block").SetInt(blockID);
-			}
-			if(itemID == -1)
-			{
-				itemID = world.registerNewItem(this);
-				configs.FindOrAdd("Dirt.Int").SetInt(itemID);
-			}
-		}
-
-		@Override
-		public void onLoadBlockIDs(World world, ITag configs)
-		{
-			ITag t = configs.Find("Dirt");
-			if(t == null) return;
-			blockID = t.FindOrAdd("Block").GetInt();
-			itemID = t.FindOrAdd("Item").GetInt();
-		}
-
-		@Override
-		public void onSave(World world, ITag configs)
-		{
-		}
-
-		
 	//IBlock
-		
-		@Override
-		public int getBlockID()
-		{
-			return blockID;
-		}
-		
-		@Override
-		public String getBlockName()
-		{
-			return "Dirt";
-		}
 		
 		@Override
 		public boolean isSolid(World world, int x, int y, int z)
@@ -102,17 +62,9 @@ public class Dirt
 		{
 		}
 		
-	//IItem
-		
-		@Override
-		public int getItemID()
+	//IPlaceableItem
+		public int PlacedBlockID(IWorld world)
 		{
-			return itemID;
-		}
-		
-		@Override
-		public String getItemName()
-		{
-			return "Dirt";
+			return blockID;
 		}
 }

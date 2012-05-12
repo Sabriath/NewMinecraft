@@ -4,12 +4,6 @@ import net.minecraft.src.*;
 
 public interface IBlock
 {
-	//returns the ID of block in this instance, should match registration
-	public abstract int getBlockID();
-	
-	//returns the common name
-	public abstract String getBlockName();
-	
 	//Can this block be stood on and block movement?
 	public abstract boolean isSolid(World world, int x, int y, int z);
 	

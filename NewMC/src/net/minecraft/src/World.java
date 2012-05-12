@@ -3,61 +3,109 @@ package net.minecraft.src;
 import net.minecraft.api.*;
 
 public class World
+	implements IWorld
 {
-	private IBlock blocksList[] = new IBlock[32768];
-	private int lastBlock = 0;
-	private IItem itemsList[] = new IItem[32768];
-	private int lastItem = 0;
+	private IBlock blocksList[] = new IBlock[4096];
+	private String blocksName[] = new String[4096];
+	private IItem itemsList[] = new IItem[65536];
+	private String itemsName[] = new String[65536];
 	
-	public int registerNewBlock(IBlock block)
+	public int registerBlock(IBlock block, String name)
 	{
-		int i;
-		for(i = lastBlock; i < 32768; i++)
+		int j = -1;
+		
+		for(int i = 0; i < 4096; i++)
 		{
-			if(blocksList[i] == null)
+			if(blocksName[i] == null)
 			{
+				if(j == -1)
+					j = i;
+			}
+			else if(blocksName[i] == name)
+			{
+				if(blocksList[i] != null)
+					throw new RuntimeException("'" + name + "' already exists as a block type");
 				blocksList[i] = block;
-				lastBlock = i + 1;
 				return i;
 			}
 		}
-		// TODO: actually throw something meaningful
-		throw new IllegalArgumentException("registerNewBlock maxed");
-	}
-		
-	public void registerBlock(IBlock block, int id)
-	{
-		if(blocksList[id] == null)
-			blocksList[id] = block;
-		else
-			throw new IllegalArgumentException((new StringBuilder()).append("Slot ").append(id).append(" is already occupied by ").append(blocksList[id]).append(" when adding Block ").append(block).toString());
+		if(j == -1)
+			throw new RuntimeException("Maximum block IDs reached");
+		blocksName[j] = name;
+		blocksList[j] = block;
+		return j;
 	}
 	
-	public int registerNewItem(IItem item)
+	public int registerItem(IItem item, String name)
 	{
-		int i;
-		for(i = lastItem; i < 32000; i++)
+		int j = -1;
+		
+		for(int i = 0; i < 65536; i++)
 		{
-			if(itemsList[i] == null)
+			if(itemsName[i] == null)
 			{
+				if(j == -1)
+					j = i;
+			}
+			else if(itemsName[i] == name)
+			{
+				if(itemsList[i] != null)
+					throw new RuntimeException("'" + name + "' already exists as an item type");
 				itemsList[i] = item;
-				lastItem = i + 1;
-				return i | 32768;
+				return i;
 			}
 		}
-		// TODO: actually throw something meaningful
-		throw new IllegalArgumentException("registerNewItem maxed");
+		if(j == -1)
+			throw new RuntimeException("Maximum item IDs reached");
+		itemsName[j] = name;
+		itemsList[j] = item;
+		return j;
 	}
 	
-	public void registerItem(IItem item, int id)
+	public int getBlockID(String name)
 	{
-		id &= 32767;
-		if(itemsList[id] == null)
-			itemsList[id] = item;
-		else
-			throw new IllegalArgumentException((new StringBuilder()).append("Slot ").append(id).append(" is already occupied by ").append(itemsList[id]).append(" when adding Item ").append(item).toString());
+		for(int i = 0; i < 4096; i++)
+			if(blocksName[i] == name)
+				return i;
+		return -1;
 	}
 	
+	public int getItemID(String name)
+	{
+		for(int i = 0; i < 65536; i++)
+			if(itemsName[i] == name)
+				return i;
+		return -1;
+	}
+	
+	public String getBlockName(int id)
+	{
+		if((id >= 0) && (id < 4096))
+			return blocksName[id];
+		return null;
+	}
+	
+	public String getItemName(int id)
+	{
+		if((id >= 0) && (id < 65536))
+			return itemsName[id];
+		return null;
+	}
+	
+	public IBlock getBlock(int id)
+	{
+		if((id >= 0) && (id < 4096))
+			return blocksList[id];
+		return null;
+	}
+	
+	public IItem getItem(int id)
+	{
+		if((id >= 0) && (id < 65536))
+			return itemsList[id];
+		return null;
+	}
+
 	public ItemStack newItemStack(int id, int dmg, int count)
 	{
 		return new ItemStack(id, dmg, count);
