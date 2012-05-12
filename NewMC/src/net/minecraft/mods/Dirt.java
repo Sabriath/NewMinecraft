@@ -8,7 +8,8 @@ public class Dirt
 {
 	
 	//IMod
-		public Dirt block = null;
+		int blockID = -1;
+		int itemID = -1;
 		
 		@Override
 		public void onLoad()
@@ -16,46 +17,36 @@ public class Dirt
 		}
 	
 		@Override
-		public void onMapNew(World world)
+		public void onNewBlockIDs(World world, ITag configs)
 		{
-			block = new Dirt();
-			block.blockID = world.registerNewBlock(block);
-			block.itemID = world.registerNewItem(block);
+			if(blockID == -1)
+			{
+				blockID = world.registerNewBlock(this);
+				configs.FindOrAdd("Dirt.Block").SetInt(blockID);
+			}
+			if(itemID == -1)
+			{
+				itemID = world.registerNewItem(this);
+				configs.FindOrAdd("Dirt.Int").SetInt(itemID);
+			}
 		}
-	
+
 		@Override
-		public void onMapLoad(World world, IFile file)
+		public void onLoadBlockIDs(World world, ITag configs)
 		{
-			int i = file.readCFGInt("Block.Dirt", -1);
-			int j = file.readCFGInt("Item.Dirt", -1);
-			block = new Dirt();
-			block.blockID = i;
-			block.itemID = j;
-			if(i != -1)
-				world.registerBlock(block, i);
-			if(j != -1)
-				world.registerItem(block, j);
+			ITag t = configs.Find("Dirt");
+			if(t == null) return;
+			blockID = t.FindOrAdd("Block").GetInt();
+			itemID = t.FindOrAdd("Item").GetInt();
 		}
-		
+
 		@Override
-		public void onMapLoadFinal(World world, IFile file)
+		public void onSave(World world, ITag configs)
 		{
-			if(block.blockID == -1)
-				block.blockID = world.registerNewBlock(block);
-			if(block.itemID == -1)
-				block.itemID = world.registerNewItem(block);
 		}
-	
-		@Override
-		public void onMapSave(World world, IFile file) 
-		{
-			file.writeCFGInt("Block.Dirt", block.blockID);
-			file.writeCFGInt("Item.Dirt", block.itemID);
-		}
-		
+
 		
 	//IBlock
-		public int blockID;
 		
 		@Override
 		public int getBlockID()
@@ -96,8 +87,9 @@ public class Dirt
 		}
 		
 		@Override
-		public void updateBlockTick(World world, int x, int y, int z)
+		public int updateBlockTick(World world, int x, int y, int z)
 		{
+			return 0;
 		}
 		
 		@Override
@@ -110,9 +102,7 @@ public class Dirt
 		{
 		}
 		
-		
 	//IItem
-		public int itemID;
 		
 		@Override
 		public int getItemID()

@@ -56,7 +56,7 @@ public class Tag
 	}
 
 	@Override
-	public ITag Add(String key)
+	public ITag FindOrAdd(String key)
 	{
 		String[] t = key.split(".");
 		String n;
@@ -83,18 +83,36 @@ public class Tag
 		}
 		return cand;
 	}
-
+	
 	@Override
-	public ITag Set(String val)
+	public ITag SetStr(String val)
 	{
 		Tval = val;
 		return this;
 	}
-	
+
 	@Override
-	public String Get()
+	public ITag SetInt(int val)
 	{
-		return Tval;
+		Tval = Integer.toString(val);
+		// TODO Auto-generated method stub
+		return this;
+	}
+
+	@Override
+	public String GetStr()
+	{
+		if(Tval == null)
+			return Tval;
+		return "";
+	}
+
+	@Override
+	public int GetInt()
+	{
+		if((Tval == null) || (Tval == ""))
+			return -1;
+		return Integer.parseInt(Tval);
 	}
 
 	@Override

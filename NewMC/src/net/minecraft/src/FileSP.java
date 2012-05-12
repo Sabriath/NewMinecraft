@@ -29,7 +29,7 @@ public class FileSP
 				{
 					if(looksz > 0)
 					{
-						cur = up1.Add(lookahead);
+						cur = up1.FindOrAdd(lookahead);
 						lookahead = "";
 						looksz = 0;
 					}
@@ -42,7 +42,7 @@ public class FileSP
 					if(looksz > 0)
 					{
 						if(up1.Find(lookahead) == null)
-							cur = up1.Add(lookahead);
+							cur = up1.FindOrAdd(lookahead);
 						lookahead = "";
 						looksz = 0;
 					}
@@ -61,7 +61,7 @@ public class FileSP
 					if(looksz > 0)
 					{
 						if(up1.Find(lookahead) == null)
-							cur = up1.Add(lookahead);
+							cur = up1.FindOrAdd(lookahead);
 						lookahead = "";
 						looksz = 0;
 					}
@@ -77,14 +77,14 @@ public class FileSP
 					if(looksz > 0)
 					{
 						if(up1.Find(lookahead) == null)
-							cur = up1.Add(lookahead);
+							cur = up1.FindOrAdd(lookahead);
 						looksz = 0;
 					}
 					if(cur == null)
 						//TODO throw something meaningful
 						throw new IllegalArgumentException("'=' in cfg file has no target");
 					if((lookahead = b.readLine()) != null)
-						cur.Set(lookahead);
+						cur.SetStr(lookahead);
 					lookahead = "";
 				}
 				lookahead.concat(Character.toString(((char)(look1 & 255))));
@@ -130,7 +130,7 @@ public class FileSP
 				if(inest > 0)
 					b.write("                ".substring(0, inest));
 				b.write(cur.GetK());
-				if((n = cur.Get()) != null)
+				if((n = cur.GetStr()) != null)
 					b.write("=".concat(n));
 				b.newLine();
 				if((chld = cur.GetF()) != null)
