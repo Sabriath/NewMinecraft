@@ -1,6 +1,7 @@
 package net.minecraft.src;
 
 import net.minecraft.api.*;
+import java.util.*;
 
 public class World
 	implements IWorld
@@ -9,7 +10,10 @@ public class World
 	private String blocksName[] = new String[4096];
 	private IItem itemsList[] = new IItem[65536];
 	private String itemsName[] = new String[65536];
+	private List<Chunk> chunksDropping = new ArrayList();
+	private List<Chunk> chunkList = new ArrayList();
 	
+	@Override
 	public int registerBlock(IBlock block, String name)
 	{
 		int j = -1;
@@ -36,6 +40,7 @@ public class World
 		return j;
 	}
 	
+	@Override
 	public int registerItem(IItem item, String name)
 	{
 		int j = -1;
@@ -62,6 +67,7 @@ public class World
 		return j;
 	}
 	
+	@Override
 	public int getBlockID(String name)
 	{
 		for(int i = 0; i < 4096; i++)
@@ -70,6 +76,7 @@ public class World
 		return -1;
 	}
 	
+	@Override
 	public int getItemID(String name)
 	{
 		for(int i = 0; i < 65536; i++)
@@ -78,6 +85,7 @@ public class World
 		return -1;
 	}
 	
+	@Override
 	public String getBlockName(int id)
 	{
 		if((id >= 0) && (id < 4096))
@@ -85,6 +93,7 @@ public class World
 		return null;
 	}
 	
+	@Override
 	public String getItemName(int id)
 	{
 		if((id >= 0) && (id < 65536))
@@ -92,6 +101,7 @@ public class World
 		return null;
 	}
 	
+	@Override
 	public IBlock getBlock(int id)
 	{
 		if((id >= 0) && (id < 4096))
@@ -99,6 +109,7 @@ public class World
 		return null;
 	}
 	
+	@Override
 	public IItem getItem(int id)
 	{
 		if((id >= 0) && (id < 65536))
@@ -106,8 +117,78 @@ public class World
 		return null;
 	}
 
-	public ItemStack newItemStack(int id, int dmg, int count)
+	@Override
+	public boolean ChunkExists(int x, int y, int z)
 	{
-		return new ItemStack(id, dmg, count);
+		int tx = x & -16;
+		int ty = y & -16;
+		int tz = z & -16;
+		
+		for(Chunk i : chunkList)
+		{
+			if(i.isXYZ(tx, ty, tz))
+				return true;
+		}
+		return false;
 	}
+
+	@Override
+	public int getBlockIDAt(int x, int y, int z)
+	{
+		int tx = x & -16;
+		int ty = y & -16;
+		int tz = z & -16;
+		
+		for(Chunk i : chunkList)
+		{
+			if(i.isXYZ(tx, ty, tz))
+				return (int)(i.getBlock(tx, ty, tz));
+		}
+		return -1;
+	}
+
+	@Override
+	public IBlock getBlockAt(int x, int y, int z)
+	{
+		int tx = x & -16;
+		int ty = y & -16;
+		int tz = z & -16;
+		
+		for(Chunk i : chunkList)
+		{
+			if(i.isXYZ(tx, ty, tz))
+				return blocksList[i.getBlock(tx, ty, tz)];
+		}
+		return null;
+	}
+
+	@Override
+	public int getLightAt(int x, int y, int z)
+	{
+		int tx = x & -16;
+		int ty = y & -16;
+		int tz = z & -16;
+		
+		for(Chunk i : chunkList)
+		{
+			if(i.isXYZ(tx, ty, tz))
+				return i.getLight(tx, ty, tz);
+		}
+		return 0;
+	}
+	
+	@Override
+	public int DrawTri(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, int uvID, int uvP1, int uvP2, int uvP3, int rgb)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void DrawSqr(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, int uvID, int rgb)
+	{
+		DrawTri(x1, y1, z1, x2, y2, z2, x4, y4, z4, uvID, 0, 1, 3, rgb);
+		DrawTri(x4, y4, z4, x2, y2, z2, x3, y3, z3, uvID, 3, 1, 2, rgb);
+	}
+	
 }
