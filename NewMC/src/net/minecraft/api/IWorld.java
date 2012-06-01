@@ -13,20 +13,9 @@ public interface IWorld
 	public abstract IBlock getBlock(int id);
 	public abstract IItem getItem(int id);
 	
-	public abstract boolean ChunkExists(int x, int y, int z);
+	public abstract boolean isChunkLoaded(int x, int y, int z);
 	
 	public abstract int getBlockIDAt(int x, int y, int z);
 	public abstract IBlock getBlockAt(int x, int y, int z);
-	public abstract int getLightAt(int x, int y, int z);
-	
-	public abstract int DrawTri(	float x1, float y1, float z1,
-									float x2, float y2, float z2,
-									float x3, float y3, float z3,
-									int uvID, int uvP1, int uvP2, int uvP3,
-									int rgb);
-	public abstract void DrawSqr(	float x1, float y1, float z1,
-									float x2, float y2, float z2,
-									float x3, float y3, float z3,
-									float x4, float y4, float z4,
-									int uvID, int rgb);
+	public abstract BetterQueue<Integer> getRayTrace(double x1, double y1, double z1, double x2, double y2, double z2);
 }
