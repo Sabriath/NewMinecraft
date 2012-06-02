@@ -10,6 +10,8 @@ public class World
 	private String blocksName[] = new String[65536];
 	private IItem itemsList[] = new IItem[65536];
 	private String itemsName[] = new String[65536];
+	private byte itemsTracked[] = new byte[65536];
+	private byte itemsUTracked[] = new byte[65536];
 	private List<Chunk> chunksDropping = new ArrayList();
 	private List<Chunk> chunkList = new ArrayList();
 	private Chunk chunkCache = null;
@@ -101,6 +103,12 @@ public class World
 			return itemsName[id];
 		return null;
 	}
+
+	@Override
+	public IItem newItem(int id)
+	{
+		
+	}
 	
 	@Override
 	public IBlock getBlock(int id)
@@ -159,12 +167,46 @@ public class World
 	}
 	
 	@Override
+	public int getBlockIDAt(Orientation o)
+	{
+		return getBlockIDAt(o.x, o.y, o.z);
+	}
+	
+	@Override
 	public IBlock getBlockAt(int x, int y, int z)
 	{
 		int k = getBlockIDAt(x, y, z);
 		if(k == -1)
 			return null;
 		return blocksList[k];
+	}
+	
+	@Override
+	public boolean setBlockIDAt(int id, int x, int y, int z, double fx, double fy, double fz)
+	{
+		int k = getBlockIDAt(x, y, z);
+		if(k == -1)
+			return false;
+		if(k == id)
+		{
+			IBlock b = blocksList[k];
+			b.onBlockRemove(this, x, y, z, fx, fy, fz);
+			b.onBlockAdd(this, x, y, z, fx, fy, fz);
+			return true;
+		}
+		blocksList[k].onBlockRemove(this, x, y, z, fx, fy, fz);
+		chunkCache.setBlock(x, y, z, id);
+		blocksList[id].onBlockAdd(this, x, y, z, fx, fy, fz);
+		return false;
+	}
+	
+	@Override
+	public boolean isBlockBlocking(int x, int y, int z, int face)
+	{
+		int k = getBlockIDAt(x, y, z);
+		if(k == -1)
+			return false;
+		return blocksList[k].isBlocking(this, x, y, z, face);
 	}
 	
 	@Override
@@ -250,5 +292,39 @@ public class World
 		}
 		return ret;
 	}
-	
+
+	@Override
+	public ITexture registerTexture(String imgfile, int filex, int filey, int width, int height, int colorfilter, boolean transparent)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addTriangle(Texel t1, Texel t2, Texel t3)
+	{
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public int getLight(double x, double y, double z)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int rndInt()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double rnd()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
