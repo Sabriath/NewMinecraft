@@ -107,7 +107,13 @@ public class World
 	@Override
 	public IItem newItem(int id)
 	{
-		
+		if((id >= 0) && (id < 65536))
+		{
+			IItem k = itemsList[id];
+			if(k != null)
+				return k.spawn();
+		}
+		return null;
 	}
 	
 	@Override
@@ -325,6 +331,14 @@ public class World
 	{
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public boolean updateRandomTick(int x, int y, int z, int minticks,
+			int maxticks)
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
