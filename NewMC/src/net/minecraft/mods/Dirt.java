@@ -19,7 +19,7 @@ public class Dirt
 		}
 		
 		@Override
-		public void onLoadLast(IWorld world)
+		public void onLoadLast(IWorld world, boolean triggered)
 		{
 		}
 
@@ -55,6 +55,11 @@ public class Dirt
 		
 		@Override
 		public void updateBlockTick(IWorld world, int x, int y, int z)
+		{
+		}
+		
+		@Override
+		public void updateBlockRandomTick(IWorld world, int x, int y, int z)
 		{
 		}
 		

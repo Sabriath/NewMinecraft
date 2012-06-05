@@ -12,9 +12,70 @@ public class World
 	private String itemsName[] = new String[65536];
 	private byte itemsTracked[] = new byte[65536];
 	private byte itemsUTracked[] = new byte[65536];
+	private boolean waitSync = false;
+	private List<IMod> waitList = new ArrayList();
+	private List<String> waitListBIM = new ArrayList();
 	private List<Chunk> chunksDropping = new ArrayList();
 	private List<Chunk> chunkList = new ArrayList();
 	private Chunk chunkCache = null;
+	
+	@Override
+	public boolean registerLoadAfter(IMod callback, String waitforblock, String waitforitem, String waitformob)
+	{
+		if(waitSync)
+			return false;
+		waitList.add(callback);
+		waitListBIM.add(waitforblock);
+		waitListBIM.add(waitforitem);
+		waitListBIM.add(waitformob);
+		return true;
+	}
+
+	private void registerFinish()
+	{
+		waitSync = true;
+		boolean doAgain = true;
+		int i, j;
+		IMod wL;
+		String wLB;
+		String wLI;
+		String wLM;
+		
+		while(doAgain)
+		{
+			doAgain = false;
+			for(i = waitList.size() - 1; i >= 0; i--)
+			{
+				j = i * 3;
+				wL = waitList.get(i);
+				wLB = waitListBIM.get(j);
+				wLI = waitListBIM.get(j + 1);
+				wLM = waitListBIM.get(j + 2);
+				if((wLB != "") && (getBlockID(wLB) == -1))
+					continue;
+				if((wLI != "") && (getItemID(wLI) == -1))
+					continue;
+				//TODO check wLM against mob registry and continue;
+				
+				wL.onLoadLast(this, true);
+				waitList.remove(i);
+				waitListBIM.remove(j + 2);
+				waitListBIM.remove(j + 1);
+				waitListBIM.remove(j);
+				doAgain = true;
+			}
+		}
+		for(i = waitList.size() - 1; i >= 0; i--)
+		{
+			wL = waitList.get(i);
+			wL.onLoadLast(this, false);
+		}
+		//no sense wasting memory
+		waitList.clear();
+		waitList = null;
+		waitListBIM.clear();
+		waitListBIM = null;
+	}
 	
 	@Override
 	public int registerBlock(IBlock block, String name)
@@ -320,7 +381,7 @@ public class World
 	}
 
 	@Override
-	public int rndInt()
+	public int rndInt(int max)
 	{
 		// TODO Auto-generated method stub
 		return 0;
@@ -332,13 +393,4 @@ public class World
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
-	@Override
-	public boolean updateRandomTick(int x, int y, int z, int minticks,
-			int maxticks)
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

@@ -74,6 +74,32 @@ public class BetterQueue<E>
 		return f;
 	}
 
+	public boolean delete(int index)
+	{
+		if((index < 0) || (index >= sz))
+			return false;
+		Node<E> c2 = null;
+		for(Node<E> c1 = first.next; c1 != null; c1 = c1.next)
+		{
+			if(index-- == 0)
+			{
+				sz--;
+				if(c2 == null)
+					first = c1.next;
+				else
+					c2.next = c1.next;
+				if(last == c2.next)
+					last = c2;
+				c1.next = null;
+				c1 = null;
+				c2 = null;
+				return true;
+			}
+			c2 = c1;
+		}
+		return false;  //should never get here, but hushes the compiler warning
+	}
+	
 	public boolean remove(E o)
 	{
 		Node<E> c2 = null;
@@ -93,6 +119,7 @@ public class BetterQueue<E>
 				c2 = null;
 				return true;
 			}
+			c2 = c1;
 		}
 		return false;
 	}
@@ -145,13 +172,11 @@ public class BetterQueue<E>
 
 	public E peek(int index)
 	{
-		if(sz == 0)
-			return null;
-		if((index <= 0) || (index >= sz))
+		if((index < 0) || (index >= sz))
 			return null;
 		for(Node<E> c = first.next; c != null; c = c.next)
 		{
-			if(--index == 0)
+			if(index-- == 0)
 				return c.t;
 		}
 		return null;  //should never get here, but hushes the compiler warning

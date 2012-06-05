@@ -1,7 +1,6 @@
 package net.minecraft.mods;
 
 import net.minecraft.api.*;
-import java.util.*;
 
 public class Grass
 	implements IMod, IBlock, IPlaceableItem
@@ -17,19 +16,23 @@ public class Grass
 		@Override
 		public void onLoad(IWorld world)
 		{
-			blockID = world.registerBlock(this, "Grass");
-			itemID = world.registerItem(this, "Grass");
-			blockTexTop = world.registerTexture("vanilla.img", 0, 0, 16, 16, 0, false);
-			blockTexSides = world.registerTexture("vanilla.img", 0, 0, 16, 16, 0, false);
-			blockTexBottom = world.registerTexture("vanilla.img", 0, 0, 16, 16, 0, false);
+			world.registerLoadAfter(this, "Dirt", "", "");
 		}
 		
 		@Override
-		public void onLoadLast(IWorld world)
+		public void onLoadLast(IWorld world, boolean triggered)
 		{
-			dirtID = world.getBlockID("Dirt");
-			if(dirtID == -1)
-				dirtID = blockID;
+			//if there's dirt, then we can have grass
+			//  otherwise, what's the point?  Don't even register grass
+			if(triggered)
+			{
+				dirtID = world.getBlockID("Dirt");
+				blockID = world.registerBlock(this, "Grass");
+				itemID = world.registerItem(this, "Grass");
+				blockTexTop = world.registerTexture("vanilla.img", 0, 0, 16, 16, 0, false);
+				blockTexSides = world.registerTexture("vanilla.img", 0, 0, 16, 16, 0, false);
+				blockTexBottom = world.registerTexture("vanilla.img", 0, 0, 16, 16, 0, false);
+			}
 		}
 		
 	//IBlock
@@ -64,74 +67,51 @@ public class Grass
 		@Override
 		public void updateBlockTick(IWorld world, int x, int y, int z)
 		{
-			if(dirtID == -1)
-				return;
-			
+		}
+		
+		@Override
+		public void updateBlockRandomTick(IWorld world, int x, int y, int z)
+		{
 			//get light from directly above this block and die if not enough
 			int light = world.getLight(0.5 + (double)x, 0.5 + (double)y, 1.05 + (double)z);
 			if((light & 65280) < 8192)
 			{
-				world.setBlockIDAt(dirtID, x, y, z, 0.5 + (double)x, 0.5 + (double)y, 1.05 + (double)z);
+				world.setBlockIDAt(dirtID, x, y, z, 0.0, 0.0, 0.0);
 				return;
 			}
 			
-			boolean needsUpdate = false;
 			Orientation o = new Orientation(x, y, z-1);
-			List<Orientation> t = o.Iters(Orientation.MaskNorth | Orientation.MaskWest | Orientation.MaskEast | Orientation.MaskSouth);
-			int r = (int)(4 * world.rnd());
-			for(int i = 0; i < 4; i++)
+			switch(world.rndInt(8))
 			{
-				o = t.get(r);
-				r = (r + 1) % 4;
-				if(world.getBlockIDAt(o) == dirtID)
-				{
-					if((world.getLight(0.5 + (double)o.x, 0.5 + (double)o.y, 1.05 + (double)o.z) & 65280) > 24576)
-					{
-						world.setBlockIDAt(blockID, o.x, o.y, o.z, 0.5 + (double)o.x, 0.5 + (double)o.y, 1.05 + (double)o.z);
-						break;
-					}
-					needsUpdate = true;
-				}
+				case 0: o.x--;
+				case 1: o.y--; break;
+				case 2: o.x++;
+				case 3: o.y++; break;
+				case 4: o.y++;
+				case 5: o.x--; break;
+				case 6: o.y--;
+				case 7: o.x++; break;
 			}
-			r = (int)(4 * world.rnd());
-			for(int i = 0; i < 4; i++)
+			if(world.getBlockIDAt(o) == dirtID)
 			{
-				o = t.get(r);
-				o.z++;
-				r = (r + 1) % 4;
-				if(world.getBlockIDAt(o) == dirtID)
-				{
-					if((world.getLight(0.5 + (double)o.x, 0.5 + (double)o.y, 1.05 + (double)o.z) & 65280) > 24576)
-					{
-						world.setBlockIDAt(blockID, o.x, o.y, o.z, 0.5 + (double)o.x, 0.5 + (double)o.y, 1.05 + (double)o.z);
-						break;
-					}
-					needsUpdate = true;
-				}
+				if((world.getLight(0.5 + (double)o.x, 0.5 + (double)o.y, 1.05 + (double)o.z) & 65280) > 24576)
+					world.setBlockIDAt(blockID, o.x, o.y, o.z, 0.0, 0.0, 0.0);
 			}
-			for(int i = 0; i < 4; i++)
+			else if(world.getBlockIDAt(o.Iter(Orientation.Down)) == dirtID)
 			{
-				o = t.get(r);
-				o.z+=2;
-				r = (r + 1) % 4;
-				if(world.getBlockIDAt(o) == dirtID)
-				{
-					if((world.getLight(0.5 + (double)o.x, 0.5 + (double)o.y, 1.05 + (double)o.z) & 65280) > 24576)
-					{
-						world.setBlockIDAt(blockID, o.x, o.y, o.z, 0.5 + (double)o.x, 0.5 + (double)o.y, 1.05 + (double)o.z);
-						break;
-					}
-					needsUpdate = true;
-				}
+				if((world.getLight(0.5 + (double)o.x, 0.5 + (double)o.y, 1.05 + (double)o.z) & 65280) > 24576)
+					world.setBlockIDAt(blockID, o.x, o.y, o.z, 0.0, 0.0, 0.0);
 			}
-			if(needsUpdate)
-				world.updateRandomTick(x, y, z, 120, 2400);
+			else if(world.getBlockIDAt(o.Iter(Orientation.Down)) == dirtID)
+			{
+				if((world.getLight(0.5 + (double)o.x, 0.5 + (double)o.y, 1.05 + (double)o.z) & 65280) > 24576)
+					world.setBlockIDAt(blockID, o.x, o.y, o.z, 0.0, 0.0, 0.0);
+			}
 		}
 	
 		@Override
 		public void onBlockAdd(IWorld world, int x, int y, int z, double fx, double fy, double fz)
 		{
-			world.updateRandomTick(x, y, z, 120, 2400);
 		}
 	
 		@Override

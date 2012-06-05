@@ -2,6 +2,8 @@ package net.minecraft.api;
 
 public interface IWorld
 {
+	public abstract boolean registerLoadAfter(IMod callback, String waitforblock, String waitforitem, String waitformob);
+	
 	public abstract int registerBlock(IBlock block, String name);
 	public abstract int getBlockID(String name);
 	public abstract String getBlockName(int id);
@@ -11,7 +13,6 @@ public interface IWorld
 	public abstract IBlock getBlockAt(int x, int y, int z);
 	public abstract boolean isBlockBlocking(int x, int y, int z, int face);
 	public abstract boolean setBlockIDAt(int id, int x, int y, int z, double fx, double fy, double fz);
-	public abstract boolean updateRandomTick(int x, int y, int z, int minticks, int maxticks);
 
 	public abstract int registerItem(IItem item, String name);
 	public abstract int getItemID(String name);
@@ -26,6 +27,6 @@ public interface IWorld
 	public abstract void addTriangle(Texel t1, Texel t2, Texel t3);
 	public abstract int getLight(double x, double y, double z);
 	
-	public abstract int rndInt();
+	public abstract int rndInt(int max);
 	public abstract double rnd();
 }
